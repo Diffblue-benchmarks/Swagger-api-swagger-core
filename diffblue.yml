@@ -1,0 +1,2259 @@
+# Copyright 2019 Diffblue Limited. All Rights Reserved.
+cbmcArguments:
+  # Do not generate coverage comments on generated tests.
+  java-generate-no-comments: true
+  # Constrain the size of arrays created in the analyzed code.
+  java-max-vla-length: 100000
+phases:
+  -
+    # Phase 0 PRETTY, SIMPLE and SMART - pretty tests, do not test private methods directly, Smart-Harness
+    timeout: 180
+    cbmcArguments:
+      # Use simple models first containers (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # Instrument the file as opposed to the function only
+      cover-only: file
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Instantiate classes using the simplest constructor strategy
+      smart-harness: simplest-constructor-and-nondet
+  -
+    # Phase 1 PRETTY AND COMPLEX - standard models only, pretty tests, do not test private methods directly, input factory
+    timeout: 180
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 2
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+      # Limit input factory recursive depth (default 0 = no recursion allowed)
+      java-test-input-factory-bmc-recursion-limit: 4
+  -
+    # Phase 2 FIFO Strategy - pretty tests, do not test private methods directly, fifo
+    timeout: 100
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Add constraint that strings are printable
+      max-nondet-string-length: 100
+      # Explores the program tree breadth-first.
+      paths: fifo
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: false
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 3 Exceptions - do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 30
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 4 Direct testing - test private methods directly, increased reflection
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # If the logs contain output of the following then proceed to phase X
+    nextPhase:
+      # If the function is not analysable then do not pass onto the next phase
+      not_analyzed: null
+  -
+    # PHASE 5 Mocking - aggressive mocking, do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 3000
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Only load the class (and related inner/outer classes) containing the method under test,
+      load-containing-class-only: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 100
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+units:
+ - target:
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/Reader$1.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/Reader.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/Reader.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/Reader.java
+ - target:
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/OpenApiContextLocator.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/OpenApiContextLocator.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenApiContext.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Components.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Components.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/callbacks/Callback.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/callbacks/Callback.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/responses/ApiResponse.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/responses/ApiResponse.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/RequestBody.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/RequestBody.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/links/Link.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/links/Link.java
+ - target:
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/ext/AbstractOpenAPIExtension.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/ext/AbstractOpenAPIExtension.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/ResolvedParameter.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/ResolvedParameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Components.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Components.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/ext/OpenAPIExtension.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/ext/OpenAPIExtension.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Operation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Operation.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/PathItem.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/PathItem.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/Server.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/Server.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/PathItem$HttpMethod.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/PathItem.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Operation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Operation.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/Server.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/Server.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/ServerVariables.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/ServerVariables.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/MapSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/MapSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ReflectionUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ReflectionUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PrimitiveType.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PrimitiveType.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/OAuthFlow.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/OAuthFlow.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/Scopes.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/Scopes.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ComposedSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ComposedSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/License.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/License.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityRequirement.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityRequirement.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ArraySchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ArraySchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/SecurityParser.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/SecurityParser.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/security/SecurityRequirement.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/security/SecurityRequirement.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/security/OAuthScope.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/security/OAuthScope.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/security/OAuthFlows.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/security/OAuthFlows.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme$Type.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/security/SecurityScheme.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/security/SecurityScheme.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityRequirement.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityRequirement.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/OAuthFlows.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/OAuthFlows.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/Scopes.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/Scopes.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/SecurityParser$SecuritySchemePair.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/SecurityParser.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme$In.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/Extension.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/Extension.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/enums/SecuritySchemeType.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/enums/SecuritySchemeType.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/enums/SecuritySchemeIn.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/enums/SecuritySchemeIn.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/OAuthFlow.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/OAuthFlow.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/security/OAuthFlow.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/security/OAuthFlow.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme$In.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme$Type.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/OAuthFlows.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/OAuthFlows.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils$2.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Schema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Schema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/ExternalDocumentation.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/ExternalDocumentation.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/ArraySchema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/ArraySchema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/Extension.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/Extension.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/OAuthFlows.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/OAuthFlows.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/OAuthFlow.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/OAuthFlow.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/IntegerSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/IntegerSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/RefUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/RefUtils.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Discriminator.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Discriminator.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/PasswordSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/PasswordSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/responses/ApiResponses.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/responses/ApiResponses.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/responses/ApiResponse.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/responses/ApiResponse.java
+ - target:
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContextBuilder.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContextBuilder.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenApiContext.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/OpenApiContextLocator.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/OpenApiContextLocator.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/OpenAPI.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/OpenAPI.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/Server.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/Server.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/PathItem.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/PathItem.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/tags/Tag.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/tags/Tag.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Paths.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Paths.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Components.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Components.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityRequirement.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityRequirement.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityScheme.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityScheme.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/Info.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/Info.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/NumberSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/NumberSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Schema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Schema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Schema$AccessMode.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Schema.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/ExternalDocumentation.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/ExternalDocumentation.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/DiscriminatorMapping.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/DiscriminatorMapping.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/Extension.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/Extension.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/FileSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/FileSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/ClasspathOpenApiConfigurationLoader.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/ClasspathOpenApiConfigurationLoader.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/callbacks/Callback.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/callbacks/Callback.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/PathItem.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/PathItem.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverters.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverters.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/jackson/AbstractModelConverter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/jackson/AbstractModelConverter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/jackson/ModelResolver.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/jackson/ModelResolver.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/AnnotatedType.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/AnnotatedType.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverterContextImpl.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverterContextImpl.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/jackson/AbstractModelConverter$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/jackson/AbstractModelConverter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ResolvedSchema.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ResolvedSchema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/MediaType.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/MediaType.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/links/LinkParameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/links/LinkParameter.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/AnnotatedType.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/AnnotatedType.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/MediaType.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/MediaType.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/ServerVariable.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/ServerVariable.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/UUIDSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/UUIDSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/integration/ServletConfigContextUtils.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/integration/ServletConfigContextUtils.java
+ - target:
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/integration/ServletPathConfigurationLoader.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/integration/ServletPathConfigurationLoader.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.java
+ - target:
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/OpenApiContextLocator.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/OpenApiContextLocator.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/URLOpenApiConfigurationLoader.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/URLOpenApiConfigurationLoader.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/jackson/ModelResolver.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/jackson/ModelResolver.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/jackson/AbstractModelConverter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/jackson/AbstractModelConverter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/FileOpenApiConfigurationLoader.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/FileOpenApiConfigurationLoader.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/ServiceOpenApiConfigurationLoader.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/ServiceOpenApiConfigurationLoader.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverters.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverters.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/ContextUtils.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/ContextUtils.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/SwaggerConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/SwaggerConfiguration.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/IntegrationObjectMapperFactory.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/IntegrationObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/OpenAPI.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/OpenAPI.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenApiReader.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenApiReader.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenApiContext.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext$Cache.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/jackson/AbstractModelConverter$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/jackson/AbstractModelConverter.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenApiConfigurationLoader.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenApiConfigurationLoader.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/ObjectMapperProcessor.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/ObjectMapperProcessor.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenApiScanner.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenApiScanner.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext$1.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/ClasspathOpenApiConfigurationLoader.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/ClasspathOpenApiConfigurationLoader.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/OpenApiConfigurationException.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/OpenApiConfigurationException.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiScanner.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiScanner.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/ServerVariables.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/ServerVariables.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/ServerVariable.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/ServerVariable.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/Scopes.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/Scopes.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/RequestBody.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/RequestBody.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ComposedSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ComposedSchema.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/ExternalDocumentation.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/ExternalDocumentation.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ArraySchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ArraySchema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils$2.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/servers/ServerVariable.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/servers/ServerVariable.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/links/LinkParameter.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/links/LinkParameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/Extension.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/Extension.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/MediaType.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/MediaType.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils$3.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/servers/Server.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/servers/Server.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/tags/Tag.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/tags/Tag.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/ServerVariable.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/ServerVariable.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/links/Link.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/links/Link.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/Contact.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/Contact.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/Info.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/Info.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ResolvedSchema.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ResolvedSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/License.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/License.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Schema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Schema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/AnnotatedType.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/AnnotatedType.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverters.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverters.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/ExampleObject.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/ExampleObject.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/ServerVariables.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/ServerVariables.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/ArraySchema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/ArraySchema.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Encoding.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Encoding.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Components.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Components.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Content.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Content.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/Server.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/Server.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/headers/Header.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/headers/Header.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverterContextImpl.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverterContextImpl.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/tags/Tag.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/tags/Tag.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/info/Contact.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/info/Contact.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/links/Link.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/links/Link.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/info/Info.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/info/Info.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/info/License.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/info/License.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/EmailSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/EmailSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Paths.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Paths.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/PathItem.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/PathItem.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathUtils.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/HeaderParameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/HeaderParameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/BooleanSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/BooleanSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/responses/ApiResponse.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/responses/ApiResponse.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/links/Link.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/links/Link.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/CookieParameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/CookieParameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/DateSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/DateSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterProcessor.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterProcessor.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ArraySchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ArraySchema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ComposedSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ComposedSchema.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Schema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Schema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/AnnotatedType.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/AnnotatedType.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverters.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverters.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/ExampleObject.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/ExampleObject.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/ArraySchema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/ArraySchema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Encoding.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Encoding.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Components.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Components.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Content.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/ExternalDocumentation.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/ExternalDocumentation.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/Extension.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/Extension.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/MediaType.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/MediaType.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/headers/Header.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/headers/Header.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverterContextImpl.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverterContextImpl.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/enums/ParameterIn.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/enums/ParameterIn.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/enums/ParameterStyle.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/enums/ParameterStyle.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterProcessor$AnnotationsHelper.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterProcessor.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/Parameter.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/Parameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ResolvedSchema.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ResolvedSchema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/PathParameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/PathParameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/StringSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/StringSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/XML.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/XML.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Discriminator.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Discriminator.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/QueryParameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/QueryParameter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ObjectSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ObjectSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/EncodingProperty.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/EncodingProperty.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/EncodingProperty$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/EncodingProperty.java
+ - target:
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext$1.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/OpenAPI.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/OpenAPI.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/util/ReaderUtils.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/util/ReaderUtils.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/ext/OpenAPIExtension.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/ext/OpenAPIExtension.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Content.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ArraySchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ArraySchema.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/ext/OpenAPIExtensions.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/ext/OpenAPIExtensions.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverter.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ComposedSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ComposedSchema.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Schema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Schema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/AnnotatedType.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/AnnotatedType.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverters.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverters.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/ExampleObject.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/ExampleObject.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterProcessor.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterProcessor.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/ArraySchema.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/ArraySchema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Encoding.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Encoding.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ReflectionUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ReflectionUtils.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/examples/Example.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/examples/Example.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Components.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Components.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/media/Content.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/media/Content.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/ExternalDocumentation.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/ExternalDocumentation.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/Extension.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/Extension.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/MediaType.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/MediaType.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/extensions/ExtensionProperty.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/headers/Header.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/headers/Header.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ModelConverterContextImpl.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ModelConverterContextImpl.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/AnnotationsUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/AnnotationsUtils.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/enums/ParameterIn.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/enums/ParameterIn.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Encoding$StyleEnum.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Encoding.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/enums/ParameterStyle.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/enums/ParameterStyle.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/converter/ResolvedSchema.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/converter/ResolvedSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterProcessor$AnnotationsHelper.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterProcessor.java
+   - dir: modules/swagger-annotations/target/classes
+     file: io/swagger/v3/oas/annotations/Parameter.class
+     sourceDir: modules/swagger-annotations/src/main/java
+     sourceFile: io/swagger/v3/oas/annotations/Parameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/XML.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/XML.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/tags/Tag.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/tags/Tag.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+ - target:
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext$Cache.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/links/Link.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/links/Link.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/Server.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/Server.java
+ - target:
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/integration/resources/BaseOpenApiResource.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/integration/resources/BaseOpenApiResource.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/filter/SpecFilter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/filter/SpecFilter.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/OpenApiContextLocator.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/OpenApiContextLocator.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/model/ApiDescription.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/model/ApiDescription.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/tags/Tag.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/tags/Tag.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/SecuritySchemeDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/SecuritySchemeDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/PathItem.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/PathItem.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/filter/OpenAPISpecFilter.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/filter/OpenAPISpecFilter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ModelDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ModelDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ComposedSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ComposedSchema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/CallbackDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/CallbackDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ArraySchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ArraySchema.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Yaml.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Yaml.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Paths.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Paths.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/OpenAPI.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/OpenAPI.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/HeaderStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/responses/ApiResponse.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/responses/ApiResponse.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenApiContext.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingPropertyStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Components.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Components.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ApiResponsesDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ApiResponsesDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/MediaType.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/MediaType.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/api/OpenAPIConfiguration.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/integration/ServletConfigContextUtils.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/integration/ServletConfigContextUtils.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/RequestBody.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/RequestBody.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/Json.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/Json.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ParameterDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ParameterDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/headers/Header.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/headers/Header.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/ObjectMapperFactory$1.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/ObjectMapperFactory.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/DeserializationModule.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/DeserializationModule.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/PathsDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/PathsDeserializer.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContextBuilder.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContextBuilder.java
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/GenericOpenApiContext.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/GenericOpenApiContext.java
+   - dir: modules/swagger-jaxrs2/target/classes
+     file: io/swagger/v3/jaxrs2/integration/JaxrsOpenApiContextBuilder.class
+     sourceDir: modules/swagger-jaxrs2/src/main/java
+     sourceFile: io/swagger/v3/jaxrs2/integration/JaxrsOpenApiContextBuilder.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/EncodingStyleEnumDeserializer.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Operation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Operation.java
+   - dir: modules/swagger-core/target/classes
+     file: io/swagger/v3/core/util/RefUtils.class
+     sourceDir: modules/swagger-core/src/main/java
+     sourceFile: io/swagger/v3/core/util/RefUtils.java
+ - target:
+   - dir: modules/swagger-integration/target/classes
+     file: io/swagger/v3/oas/integration/SwaggerConfiguration.class
+     sourceDir: modules/swagger-integration/src/main/java
+     sourceFile: io/swagger/v3/oas/integration/SwaggerConfiguration.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/OpenAPI.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/OpenAPI.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/Contact.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/Contact.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/BinarySchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/BinarySchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/ByteArraySchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/ByteArraySchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/Info.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/Info.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/License.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/License.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/info/Contact.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/info/Contact.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/DateTimeSchema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/DateTimeSchema.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/media/Schema.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/media/Schema.java
+ - target:
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/Operation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/Operation.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/servers/Server.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/servers/Server.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/security/SecurityRequirement.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/security/SecurityRequirement.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/ExternalDocumentation.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/ExternalDocumentation.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/RequestBody.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/RequestBody.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/responses/ApiResponses.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/responses/ApiResponses.java
+   - dir: modules/swagger-models/target/classes
+     file: io/swagger/v3/oas/models/parameters/Parameter.class
+     sourceDir: modules/swagger-models/src/main/java
+     sourceFile: io/swagger/v3/oas/models/parameters/Parameter.java
